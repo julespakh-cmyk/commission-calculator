@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Commission Calculator</title>
+<style>
+  :root {
+    --bg: #f7f5f1;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6a6a6a;
+    --accent: #8a1538;
+    --accent-soft: #f4e6eb;
+    --border: #e2ddd5;
+    --ok: #2d7a4f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181614;
+      --card: #23211e;
+      --ink: #f1ede5;
+      --muted: #a39f96;
+      --accent: #d98aa3;
+      --accent-soft: #3a2029;
+      --border: #3a3731;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+  }
+  main {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -0.2px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 24px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .input-wrap {
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .input-wrap:last-child { margin-bottom: 0; }
+  .dollar {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 17px;
+    pointer-events: none;
+  }
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 14px 14px 30px;
+    font-size: 17px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    -webkit-appearance: none;
+  }
+  input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .result-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-label {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .result-label strong {
+    display: block;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .result-value-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-value {
+    font-size: 20px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+  }
+  .copy-btn {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: none;
+    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .copy-btn:hover { filter: brightness(0.95); }
+  .copy-btn:active { transform: scale(0.95); }
+  .copy-btn.copied {
+    background: var(--ok);
+    color: #fff;
+  }
+  .copy-btn svg { width: 16px; height: 16px; }
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Commission Calculator</h1>
+  <p class="subtitle">Nick &amp; Sam&rsquo;s &mdash; captain &amp; Julianna cuts</p>
+
+  <div class="card">
+    <div class="input-wrap">
+      <label for="subtotal">Subtotal</label>
+      <span class="dollar">$</span>
+      <input type="text" id="subtotal" inputmode="decimal" autocomplete="off" placeholder="0.00">
+    </div>
+    <div class="input-wrap">
+      <label for="adminFee">Admin Fee</label>
+      <span class="dollar">$</span>
+      <input type="text" id="adminFee" inputmode="decimal" autocomplete="off" placeholder="0.00">
+      <div class="hint">Auto-fills at 4% of food &amp; bev &mdash; edit freely.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="result-row">
+      <div class="result-label">
+        <strong>Julianna&rsquo;s Cut</strong>
+        3% of subtotal
+      </div>
+      <div class="result-value-wrap">
+        <span class="result-value" id="juliannaCut">$0.00</span>
+        <button class="copy-btn" data-target="juliannaCut" aria-label="Copy Julianna's cut">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="result-row">
+      <div class="result-label">
+        <strong>Captain&rsquo;s Cut</strong>
+        Admin Fee &minus; Julianna&rsquo;s Cut
+      </div>
+      <div class="result-value-wrap">
+        <span class="result-value" id="captainCut">$0.00</span>
+        <button class="copy-btn" data-target="captainCut" aria-label="Copy captain's cut">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Julianna = subtotal &times; 3% &nbsp;&middot;&nbsp; Captain = admin fee &minus; Julianna</footer>
+</main>
+
+<script>
+  const subtotalEl = document.getElementById('subtotal');
+  const adminFeeEl = document.getElementById('adminFee');
+  const juliannaOut = document.getElementById('juliannaCut');
+  const captainOut = document.getElementById('captainCut');
+
+  let lastAutoSuggested = null;
+  let adminEditedByUser = false;
+
+  const parseMoney = (v) => {
+    if (!v) return 0;
+    const cleaned = String(v).replace(/[^0-9.\-]/g, '');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? 0 : n;
+  };
+
+  const fmt = (n) => '$' + n.toFixed(2);
+
+  const recalc = () => {
+    const sub = parseMoney(subtotalEl.value);
+    const admin = parseMoney(adminFeeEl.value);
+    const julianna = sub * 0.03;
+    const captain = admin - julianna;
+    juliannaOut.textContent = fmt(julianna);
+    captainOut.textContent = fmt(captain);
+  };
+
+  subtotalEl.addEventListener('input', () => {
+    const sub = parseMoney(subtotalEl.value);
+    const suggested = sub > 0 ? +(sub - sub / 1.04).toFixed(2) : 0;
+
+    const currentAdmin = adminFeeEl.value.trim();
+    const currentAdminNum = parseMoney(currentAdmin);
+
+    const isEmptyOrMatchesLast =
+      currentAdmin === '' ||
+      (lastAutoSuggested !== null && Math.abs(currentAdminNum - lastAutoSuggested) < 0.005);
+
+    if (!adminEditedByUser && isEmptyOrMatchesLast) {
+      if (sub > 0) {
+        adminFeeEl.value = suggested.toFixed(2);
+        lastAutoSuggested = suggested;
+      } else {
+        adminFeeEl.value = '';
+        lastAutoSuggested = null;
+      }
+    }
+    recalc();
+  });
+
+  adminFeeEl.addEventListener('input', () => {
+    const v = parseMoney(adminFeeEl.value);
+    if (lastAutoSuggested === null || Math.abs(v - lastAutoSuggested) > 0.005) {
+      adminEditedByUser = true;
+    }
+    recalc();
+  });
+
+  adminFeeEl.addEventListener('blur', () => {
+    if (adminFeeEl.value.trim() === '') {
+      adminEditedByUser = false;
+      lastAutoSuggested = null;
+    }
+  });
+
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const target = document.getElementById(btn.dataset.target);
+      const raw = target.textContent.replace(/[^0-9.\-]/g, '');
+      try {
+        await navigator.clipboard.writeText(raw);
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = raw;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      btn.classList.add('copied');
+      const original = btn.innerHTML;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = original;
+      }, 1200);
+    });
+  });
+
+  recalc();
+</script>
+</body>
+</html>
