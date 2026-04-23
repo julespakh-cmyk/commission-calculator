@@ -153,12 +153,16 @@
     justify-content: space-between;
     padding: 14px 0;
     border-bottom: 1px solid var(--border);
+    gap: 12px;
   }
   .result-row:last-child { border-bottom: none; }
   .result-label {
     font-size: 14px;
     color: var(--muted);
+    flex: 1 1 auto;
+    min-width: 0;
   }
+  .result-value-wrap { flex-shrink: 0; }
   .result-label strong {
     display: block;
     color: var(--ink);
@@ -275,6 +279,30 @@
     </div>
     <div class="result-row">
       <div class="result-label">
+        <strong>Total Taxes</strong>
+        8.25% of subtotals
+      </div>
+      <div class="result-value-wrap">
+        <span class="result-value" id="totalTax">$0.00</span>
+        <button class="copy-btn" data-target="totalTax" aria-label="Copy total taxes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="result-row">
+      <div class="result-label">
+        <strong>Total Final</strong>
+        Subtotals + taxes
+      </div>
+      <div class="result-value-wrap">
+        <span class="result-value" id="totalFinal">$0.00</span>
+        <button class="copy-btn" data-target="totalFinal" aria-label="Copy total final">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="result-row">
+      <div class="result-label">
         <strong>Total Julianna&rsquo;s Cut</strong>
         3% of combined subtotals
       </div>
@@ -337,10 +365,14 @@
 </template>
 
 <script>
+  const TAX_RATE = 0.0825;
+
   const eventsContainer = document.getElementById('events');
   const addEventBtn = document.getElementById('addEventBtn');
   const summaryEl = document.getElementById('summary');
   const totalSubtotalEl = document.getElementById('totalSubtotal');
+  const totalTaxEl = document.getElementById('totalTax');
+  const totalFinalEl = document.getElementById('totalFinal');
   const totalJuliannaEl = document.getElementById('totalJulianna');
   const tmpl = document.getElementById('eventTemplate');
 
@@ -468,7 +500,11 @@
       totalSub += sub;
       totalJul += jul;
     });
+    const totalTax = totalSub * TAX_RATE;
+    const totalFinal = totalSub + totalTax;
     totalSubtotalEl.textContent = fmt(totalSub);
+    totalTaxEl.textContent = fmt(totalTax);
+    totalFinalEl.textContent = fmt(totalFinal);
     totalJuliannaEl.textContent = fmt(totalJul);
     summaryEl.hidden = events.length < 2;
   }
